@@ -1,9 +1,43 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { UserContext } from "../UserContext";
+import axios from "axios";
 
 export const Header = () => {
   const { user, isLoggedIn } = useContext(UserContext);
+  const [articles, setArticles] = useState([]);
+  const [category, setCategory] = useState(null);
+
+  useEffect(() => {
+    axios
+      .get("/articles")
+      .then((response) => {
+        setArticles(response.data);
+      })
+      .catch((error) => {
+        console.error("Erreur lors de la récupération des articles :", error);
+      });
+  }, []);
+
+  const handleCategoryClick = (category) => {
+    setCategory(category);
+  };
+
+  function truncateText(text, wordCount) {
+    const words = text.split(" ");
+    if (words.length <= wordCount) {
+      return text;
+    }
+    const truncatedText = words.slice(0, wordCount).join(" ") + "...";
+    return truncatedText;
+  }
+
+  let filteredArticles = articles;
+  if (category) {
+    filteredArticles = articles.filter((article) =>
+      article.checkBox.includes(category)
+    );
+  }
 
   return (
     <div>
@@ -19,17 +53,17 @@ export const Header = () => {
             <h2 className="text-4xl font-bold tracking-tight text-white sm:text-6xl">
               Human Of Lome
             </h2>
-            <div className="grid mt-2 gap-1 grid-cols-1 md:grid-cols-3 lg:grid-cols-3">
-              <div className="cursor-pointer gap-1 bg-transparent p-6 text-4xl text-gray-600 inline-flex justify-center ">
-                Stories
-              </div>
-              <div className="cursor-pointer gap-1 bg-transparent p-6 text-4xl text-gray-600 inline-flex justify-center ">
-                Contrie
-              </div>
-              <div className="cursor-pointer gap-1 bg-transparent p-6 text-4xl text-gray-600 inline-flex justify-center ">
-                Series
-              </div>
-            </div>
+            <ul className="grid mt-2 gap-1 grid-cols-1 md:grid-cols-3 lg:grid-cols-3">
+              <li className="cursor-pointer gap-1 bg-transparent p-6 text-4xl text-gray-600 inline-flex justify-center ">
+                <a className="hover:text-violet-400" onClick={() => handleCategoryClick("stories")}>Stories</a>
+              </li>
+              <li className="cursor-pointer gap-1 bg-transparent p-6 text-4xl text-gray-600 inline-flex justify-center ">
+                <a className="hover:text-violet-400" onClick={() => handleCategoryClick("countries")}>Countries</a>
+              </li>
+              <li className="cursor-pointer gap-1 bg-transparent p-6 text-4xl text-gray-600 inline-flex justify-center ">
+                <a className="hover:text-violet-400" onClick={() => handleCategoryClick("series")}>Series</a>
+              </li>
+            </ul>
           </div>
         </div>
         <div className="flex justify-center mt-40 xl:mt-5  md:mt-5 lg:mt-5">
@@ -66,6 +100,47 @@ export const Header = () => {
           )}
         </div>
       </div>
+      {/* ------------------------------------- */}
+      <main>
+        <div>
+          <h1 className="flex justify-center text-2xl">
+            Liste des articles publiés
+          </h1>
+        </div>
+        <div className="p-6 grid gap-3 md:grid-cols-3">
+          {filteredArticles.map((article) => (
+            <div key={article._id}>
+              <div
+                key={article._id}
+                className="  bg-slate-200 gap-4 p-4 my-5 rounded-2xl"
+              >
+                <Link to={"/article/"+ article._id}>
+                  <div className="bg-slate-200 gap-4 p-4 mb-3 rounded-2xl cursor-pointer">
+                    <div className="bg-gray-300 rounded-2xl">
+                      {article.image && (
+                        <img
+                          src={article.image}
+                          className="rounded-2xl h-full object-cover"
+                          alt=""
+                        />
+                      )}
+                    </div>
+                    <div className="px-2">
+                      <h2 className="text-xl">{article.title}</h2>
+                      <div
+                        dangerouslySetInnerHTML={{
+                          __html: truncateText(article.content, 10),
+                        }}
+                        className="article-content"
+                      ></div>
+                    </div>
+                  </div>
+                </Link>
+              </div>
+            </div>
+          ))}
+        </div>
+      </main>
     </div>
   );
 };

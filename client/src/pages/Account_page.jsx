@@ -4,6 +4,7 @@ import { useContext, useState } from "react";
 import axios from "axios";
 import Writing_page from "./Writing_page";
 import Article_liste from "./Article_liste";
+import { AddArticle } from "./AddArticle";
 
 
 export const Account_page = () => {
@@ -99,6 +100,7 @@ export const Account_page = () => {
           My collections{" "}
         </Link>
       </nav>
+
       <div className="container max-w-xl mx-auto">
         {subpage === "profile" && (
           <div className="text-center">
@@ -113,7 +115,7 @@ export const Account_page = () => {
 
         {subpage === "write" && (
           <div>
-            <Writing_page/>
+            <AddArticle/>
           </div>
         )}
 

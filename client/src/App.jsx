@@ -10,6 +10,7 @@ import { Account_page } from "./pages/Account_page";
 import "./App.css";
 import { UserContexteProvider } from "./UserContext";
 import PulicationPage from "./pages/PulicationPage";
+import ArticleBank from "./pages/ArticleBank";
 
 axios.defaults.baseURL = "http://127.0.0.1:3002";
 axios.defaults.withCredentials = true;
@@ -24,9 +25,12 @@ function App() {
           <Route path="login" element={<Login_page />} />
           <Route path="Register" element={<Register_page />} />
           <Route path="account/:subpage?" element={<Account_page />} />
-          <Route path="account/:subpage?/:id" element={<Account_page />} />
+          <Route path="account/:subpage/:action" element={<Account_page />} />
+          <Route path="account/:subpage/:action/:id" element={<Account_page/>} />
+          <Route path="article/:id" element={<PulicationPage/>} />
+          <Route path="articles" element={<ArticleBank/>} />
 
-          <Route path="account/my_article/:id" element={<PulicationPage/>} />
+
         </Routes>
       </BrowserRouter>
     </UserContexteProvider>
